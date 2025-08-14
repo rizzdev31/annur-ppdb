@@ -6,7 +6,7 @@
     <div class="absolute inset-0 bg-black opacity-20"></div>
     <div class="relative z-10 text-center text-white px-4">
         <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-            PPDB ONLINE {{ date('Y') }}
+            PPDB MUBOSTA / MA eMAS {{ date('Y') }}
         </h1>
         <p class="text-xl md:text-2xl mb-8 animate-slide-up">
             Penerimaan Peserta Didik Baru 

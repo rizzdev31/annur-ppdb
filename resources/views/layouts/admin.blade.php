@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - Admin PPDB</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
@@ -89,6 +90,20 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
                             </svg>
                             Berita
+                        </a>
+                        <!-- Tambahkan menu Manajemen User di bawah ini -->
+                        <a href="{{ route('admin.users.index') }}" 
+                           class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-white hover:bg-gray-700 {{ request()->routeIs('admin.users.*') ? 'bg-gray-900' : '' }}">
+                            <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6 3.87v-2a4 4 0 00-3-3.87m6 3.87a4 4 0 00-3-3.87m0 0a4 4 0 00-3 3.87"></path>
+                            </svg>
+                            Manajemen User
+                        </a>
+                        <!-- Menu Kelola Akun -->
+                        <a href="{{ route('admin.accounts.dashboard') }}" 
+                           class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-white hover:bg-gray-700 {{ request()->routeIs('admin.accounts.*') ? 'bg-gray-900' : '' }}">
+                            <i class="fas fa-user-cog mr-3 h-6 w-6"></i>
+                            Kelola Akun
                         </a>
                     </nav>
                 </div>

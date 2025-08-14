@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('pendaftarans', function (Blueprint $table) {
+            // Simpan password asli yang terenkripsi untuk ditampilkan sekali
+            $table->string('original_password')->nullable()->after('password');
+            $table->boolean('password_changed')->default(false)->after('original_password');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('pendaftarans', function (Blueprint $table) {
+            $table->dropColumn(['original_password', 'password_changed']);
+        });
+    }
+};

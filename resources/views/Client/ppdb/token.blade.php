@@ -62,15 +62,16 @@
             </div>
         </div>
 
-        <!-- Info -->
-        <div class="mt-8 text-center text-white">
-            <p class="text-sm">Hubungi panitia PPDB jika Anda belum memiliki token</p>
-            <p class="text-sm mt-2">
-                <svg class="inline w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
-                </svg>
-                0812-3456-7890
-            </p>
+        <!-- Help Section with WhatsApp Button -->
+        <div class="mt-8 text-center">
+            <p class="text-blue-200 mb-4">Belum punya token pendaftaran?</p>
+            {{-- Replace the phone number with your admin's WhatsApp number --}}
+            {{-- A pre-filled message is added to make it easier for users --}}
+            <a href="https://wa.me/6281234567890?text=Assalamualaikum,%20saya%20ingin%20meminta%20token%20pendaftaran%20PPDB." 
+               target="_blank" 
+               class="inline-flex items-center justify-center bg-green-500 text-white py-2 px-6 rounded-full font-semibold hover:bg-green-600 transition duration-300 shadow-lg">
+                <i class="fab fa-whatsapp mr-2"></i> Minta Token via WhatsApp
+            </a>
         </div>
     </div>
 </div>

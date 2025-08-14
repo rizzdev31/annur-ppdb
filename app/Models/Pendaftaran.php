@@ -3,15 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class Pendaftaran extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
+    /**
+     * The table associated with the model.
+     */
     protected $table = 'pendaftarans';
 
+    /**
+     * The attributes that are mass assignable.
+     */
     protected $fillable = [
         'token',
         'nisn',
@@ -31,116 +37,78 @@ class Pendaftaran extends Authenticatable
         'kecamatan',
         'alamat_lengkap',
         'asal_sekolah',
+        'jenjang',
         'no_whatsapp',
         'bukti_pembayaran',
+        'ijazah',
+        'surat_keterangan_lulus',
+        'akta_kelahiran',
+        'kartu_keluarga',
         'password',
+        'original_password',
+        'password_changed',
         'status',
+        'is_credentials_sent',
+        'credentials_sent_at',
         'gelombang_id',
-        'tahun_ajaran_id'
+        'tahun_ajaran_id',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     */
     protected $hidden = [
         'password',
-        'remember_token'
+        'original_password',
+        'remember_token',
     ];
 
+    /**
+     * The attributes that should be cast.
+     */
     protected $casts = [
         'tanggal_lahir' => 'date',
+        'credentials_sent_at' => 'datetime',
+        'is_credentials_sent' => 'boolean',
+        'password_changed' => 'boolean',
         'anak_ke' => 'integer',
-        'jumlah_saudara' => 'integer'
+        'jumlah_saudara' => 'integer',
     ];
 
-    // Relasi dengan gelombang
-    public function gelombang()
-    {
-        return $this->belongsTo(Gelombang::class);
-    }
-
-    // Relasi dengan tahun ajaran
-    public function tahunAjaran()
-    {
-        return $this->belongsTo(TahunAjaran::class);
-    }
-
-    // Scope untuk status
-    public function scopeStatus($query, $status)
-    {
-        return $query->where('status', $status);
-    }
-
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pending');
-    }
-
-    public function scopeSeleksi($query)
-    {
-        return $query->where('status', 'seleksi');
-    }
-
-    public function scopeDiterima($query)
-    {
-        return $query->where('status', 'diterima');
-    }
-
-    public function scopeDitolak($query)
-    {
-        return $query->where('status', 'ditolak');
-    }
-
-    // Status helpers
-    public function isPending()
-    {
-        return $this->status === 'pending';
-    }
-
-    public function isSeleksi()
-    {
-        return $this->status === 'seleksi';
-    }
-
-    public function isDiterima()
-    {
-        return $this->status === 'diterima';
-    }
-
-    public function isDitolak()
-    {
-        return $this->status === 'ditolak';
-    }
-
-    // Update status
-    public function updateStatus($status)
-    {
-        $validStatuses = ['pending', 'seleksi', 'diterima', 'ditolak'];
-        
-        if (!in_array($status, $validStatuses)) {
-            return false;
-        }
-
-        return $this->update(['status' => $status]);
-    }
-
-    // For authentication
-    public function getAuthIdentifierName()
-    {
-        return 'nisn';
-    }
-
+    /**
+     * Get the password for authentication.
+     */
     public function getAuthPassword()
     {
         return $this->password;
     }
 
-    // Format nomor WhatsApp
-    public function getFormattedWhatsappAttribute()
+    /**
+     * Get the unique identifier for authentication.
+     */
+    public function getAuthIdentifierName()
     {
-        $number = preg_replace('/[^0-9]/', '', $this->no_whatsapp);
-        
-        if (substr($number, 0, 1) === '0') {
-            $number = '62' . substr($number, 1);
-        }
-        
-        return $number;
+        return 'nisn';
+    }
+
+    /**
+     * Get the unique identifier for the user.
+     */
+    public function getAuthIdentifier()
+    {
+        return $this->nisn;
+    }
+
+    /**
+     * Relationships
+     */
+    public function gelombang()
+    {
+        return $this->belongsTo(Gelombang::class);
+    }
+
+    public function tahunAjaran()
+    {
+        return $this->belongsTo(TahunAjaran::class);
     }
 }

@@ -6,11 +6,10 @@ use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 class RedirectIfAuthenticated
 {
-    public function handle(Request $request, Closure $next, string ...$guards): Response
+    public function handle(Request $request, Closure $next, ...$guards)
     {
         $guards = empty($guards) ? [null] : $guards;
 
@@ -19,6 +18,7 @@ class RedirectIfAuthenticated
                 if ($guard === 'pendaftaran') {
                     return redirect()->route('santri.dashboard');
                 }
+                
                 return redirect(RouteServiceProvider::HOME);
             }
         }

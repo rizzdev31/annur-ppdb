@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Token;
 use App\Models\Pendaftaran;
-use App\Models\Gelombang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 
 class PpdbController extends Controller
 {
@@ -26,85 +25,95 @@ class PpdbController extends Controller
 
         $token = Token::where('token', $request->token)
             ->where('is_used', false)
-            ->whereHas('gelombang', function($q) {
-                $q->where('is_active', true)
-                    ->whereDate('tanggal_mulai', '<=', now())
-                    ->whereDate('tanggal_selesai', '>=', now());
-            })
             ->first();
 
         if (!$token) {
-            return back()->with('error', 'Token tidak valid atau sudah digunakan!');
+            return back()->with('error', 'Token tidak valid atau sudah digunakan');
         }
 
-        session(['ppdb_token' => $token->token]);
+        session(['ppdb_token' => $request->token]);
         return redirect()->route('ppdb.form');
     }
 
     public function showForm()
     {
         if (!session('ppdb_token')) {
-            return redirect()->route('ppdb.token')
-                ->with('error', 'Silakan masukkan token terlebih dahulu!');
+            return redirect()->route('ppdb.token');
         }
 
-        $token = Token::where('token', session('ppdb_token'))->first();
-        
-        return view('client.ppdb.form', compact('token'));
+        return view('client.ppdb.form');
     }
 
     public function store(Request $request)
     {
         if (!session('ppdb_token')) {
-            return redirect()->route('ppdb.token')
-                ->with('error', 'Token tidak valid!');
+            return redirect()->route('ppdb.token');
         }
 
         $validated = $request->validate([
-            'nisn' => 'required|unique:pendaftarans,nisn',
-            'nama_lengkap' => 'required|string',
-            'tempat_lahir' => 'required|string',
+            'nisn' => 'required|string|unique:pendaftarans,nisn',
+            'nama_lengkap' => 'required|string|max:255',
+            'tempat_lahir' => 'required|string|max:255',
             'tanggal_lahir' => 'required|date',
-            'anak_ke' => 'required|integer',
-            'jumlah_saudara' => 'required|integer',
-            'nama_ayah' => 'required|string',
-            'nama_ibu' => 'required|string',
-            'pekerjaan_ayah' => 'required|string',
-            'pekerjaan_ibu' => 'required|string',
-            'pendidikan_ayah' => 'required|string',
-            'pendidikan_ibu' => 'required|string',
-            'provinsi' => 'required|string',
-            'kota' => 'required|string',
-            'kecamatan' => 'required|string',
+            'anak_ke' => 'required|integer|min:1',
+            'jumlah_saudara' => 'required|integer|min:0',
+            'nama_ayah' => 'required|string|max:255',
+            'nama_ibu' => 'required|string|max:255',
+            'pekerjaan_ayah' => 'required|string|max:255',
+            'pekerjaan_ibu' => 'required|string|max:255',
+            'pendidikan_ayah' => 'required|string|max:255',
+            'pendidikan_ibu' => 'required|string|max:255',
+            'provinsi' => 'required|string|max:255',
+            'kota' => 'required|string|max:255',
+            'kecamatan' => 'required|string|max:255',
             'alamat_lengkap' => 'required|string',
-            'asal_sekolah' => 'required|string',
-            'no_whatsapp' => 'required|string',
-            'bukti_pembayaran' => 'required|image|max:2048'
+            'asal_sekolah' => 'required|string|max:255',
+            'jenjang' => 'required|in:SD,SMP,SMA',
+            'no_whatsapp' => 'required|string|max:20',
+            'bukti_pembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            // Dokumen opsional
+            'ijazah' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'surat_keterangan_lulus' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'akta_kelahiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'kartu_keluarga' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
+        // Get token data
         $token = Token::where('token', session('ppdb_token'))->first();
+
+        // Generate password SEKALI untuk user ini
+        $generatedPassword = 'PPDB' . date('Y') . Str::random(4);
         
-        if (!$token) {
-            return redirect()->route('ppdb.token')
-                ->with('error', 'Token tidak valid!');
+        // Simpan password terenkripsi dan password asli (dienkripsi untuk keamanan)
+        $validated['password'] = Hash::make($generatedPassword);
+        $validated['original_password'] = Crypt::encryptString($generatedPassword);
+        $validated['password_changed'] = false;
+        
+        $validated['token'] = session('ppdb_token');
+        $validated['gelombang_id'] = $token->gelombang_id;
+        $validated['tahun_ajaran_id'] = $token->gelombang->tahun_ajaran_id;
+
+        // Handle file uploads
+        if ($request->hasFile('bukti_pembayaran')) {
+            $file = $request->file('bukti_pembayaran');
+            $filename = time() . '_bukti_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads'), $filename);
+            $validated['bukti_pembayaran'] = $filename;
         }
 
-        // Upload bukti pembayaran
-        $buktiPath = $request->file('bukti_pembayaran')->store('bukti-pembayaran', 'public');
-
-        // Generate password
-        $password = Str::random(8);
+        // Handle optional documents
+        $optionalDocs = ['ijazah', 'surat_keterangan_lulus', 'akta_kelahiran', 'kartu_keluarga'];
+        foreach ($optionalDocs as $doc) {
+            if ($request->hasFile($doc)) {
+                $file = $request->file($doc);
+                $filename = time() . '_' . $doc . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads'), $filename);
+                $validated[$doc] = $filename;
+            }
+        }
 
         // Create pendaftaran
-        $pendaftaran = Pendaftaran::create([
-            ...$validated,
-            'bukti_pembayaran' => $buktiPath,
-            'token' => $token->token,
-            'password' => Hash::make($password),
-            'gelombang_id' => $token->gelombang_id,
-            'tahun_ajaran_id' => $token->gelombang->tahun_ajaran_id,
-            'status' => 'pending'
-        ]);
+        $pendaftaran = Pendaftaran::create($validated);
 
         // Mark token as used
         $token->update([
@@ -115,11 +124,12 @@ class PpdbController extends Controller
         // Clear session
         session()->forget('ppdb_token');
 
-        // Store credentials temporarily to show to user
+        // Store registration data for success page
         session()->flash('registration_success', [
+            'nama' => $pendaftaran->nama_lengkap,
             'nisn' => $pendaftaran->nisn,
-            'password' => $password,
-            'nama' => $pendaftaran->nama_lengkap
+            'password' => $generatedPassword, // Password asli untuk ditampilkan SEKALI
+            'whatsapp' => $pendaftaran->no_whatsapp
         ]);
 
         return redirect()->route('ppdb.success');
