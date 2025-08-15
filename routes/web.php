@@ -8,6 +8,9 @@ use App\Http\Controllers\Client\LandingController;
 use App\Http\Controllers\Client\PpdbController;
 use App\Http\Controllers\Admin\FasilitasController;
 use App\Http\Controllers\Admin\ProgramController;
+use App\Http\Controllers\Admin\EkstrakurikulerController;
+use App\Http\Controllers\Admin\TahapanPendaftaranController;
+use App\Http\Controllers\Admin\JenjangPendidikanController;
 use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\TahunAjaranController;
 use App\Http\Controllers\Admin\GelombangController;
@@ -49,11 +52,13 @@ Route::prefix('ppdb')->name('ppdb.')->group(function () {
 
 // Santri Auth & Dashboard
 Route::prefix('santri')->name('santri.')->group(function () {
+    // Routes for guests (not logged in)
     Route::middleware('guest:pendaftaran')->group(function () {
         Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [AuthController::class, 'login']);
     });
 
+    // Routes for authenticated users
     Route::middleware('auth:pendaftaran')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
@@ -81,7 +86,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard');
         Route::get('/dashboard', [DashboardAdminController::class, 'index']); // Alias untuk dashboard
 
-        // Account Management Routes (FIX: Dipindahkan ke dalam grup admin)
+        // Account Management Routes
         Route::prefix('accounts')->name('accounts.')->group(function () {
             // Dashboard
             Route::get('/', [AccountManagementController::class, 'dashboard'])->name('dashboard');
@@ -98,18 +103,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{id}/toggle-status', [AccountManagementController::class, 'adminToggleStatus'])->name('toggle-status');
             });
 
-// Client Management Routes
-        Route::prefix('client')->name('client.')->group(function () {
-            Route::get('/', [AccountManagementController::class, 'clientIndex'])->name('index');
-            Route::get('/{id}', [AccountManagementController::class, 'clientShow'])->name('show');
-            Route::get('/{id}/edit', [AccountManagementController::class, 'clientEdit'])->name('edit');
-            Route::put('/{id}', [AccountManagementController::class, 'clientUpdate'])->name('update');
-            Route::delete('/{id}', [AccountManagementController::class, 'clientDestroy'])->name('destroy');
-            Route::post('/{id}/reset-password', [AccountManagementController::class, 'clientResetPassword'])->name('reset-password');
-            Route::get('/{id}/show-password', [AccountManagementController::class, 'clientShowPassword'])->name('show-password');
-            Route::get('/export', [AccountManagementController::class, 'clientExport'])->name('export');
-            Route::get('/export-csv', [AccountManagementController::class, 'clientExportCSV'])->name('export.csv');
-        });
+            // Client Management Routes
+            Route::prefix('client')->name('client.')->group(function () {
+                Route::get('/', [AccountManagementController::class, 'clientIndex'])->name('index');
+                Route::get('/{id}', [AccountManagementController::class, 'clientShow'])->name('show');
+                Route::get('/{id}/edit', [AccountManagementController::class, 'clientEdit'])->name('edit');
+                Route::put('/{id}', [AccountManagementController::class, 'clientUpdate'])->name('update');
+                Route::delete('/{id}', [AccountManagementController::class, 'clientDestroy'])->name('destroy');
+                Route::post('/{id}/reset-password', [AccountManagementController::class, 'clientResetPassword'])->name('reset-password');
+                Route::get('/{id}/show-password', [AccountManagementController::class, 'clientShowPassword'])->name('show-password');
+                Route::get('/export', [AccountManagementController::class, 'clientExport'])->name('export');
+                Route::get('/export-csv', [AccountManagementController::class, 'clientExportCSV'])->name('export.csv');
+            });
 
             // Activity Logs
             Route::get('/logs', [AccountManagementController::class, 'activityLogs'])->name('logs');
@@ -138,6 +143,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // CMS Management
         Route::resource('fasilitas', FasilitasController::class);
         Route::resource('program', ProgramController::class);
+        Route::resource('ekstrakurikuler', EkstrakurikulerController::class);
+        Route::resource('tahapan', TahapanPendaftaranController::class);
+        Route::resource('jenjang', JenjangPendidikanController::class);
         Route::resource('berita', BeritaController::class);
 
         // Tahun Ajaran & Gelombang

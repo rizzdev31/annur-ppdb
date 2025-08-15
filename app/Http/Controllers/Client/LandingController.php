@@ -8,7 +8,11 @@ use App\Models\Program;
 use App\Models\Berita;
 use App\Models\TahunAjaran;
 use App\Models\Gelombang;
+use App\Models\Ekstrakurikuler;
+use App\Models\TahapanPendaftaran;
+use App\Models\JenjangPendidikan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LandingController extends Controller
 {
@@ -23,8 +27,20 @@ class LandingController extends Controller
             ->orderBy('urutan')
             ->get();
             
-        $beritas = Berita::where('is_published', true)
-            ->whereNotNull('published_at')
+        $ekstrakurikulers = Ekstrakurikuler::where('is_active', true)
+            ->orderBy('urutan')
+            ->get();
+            
+        $tahapans = TahapanPendaftaran::where('is_active', true)
+            ->orderBy('urutan')
+            ->get();
+            
+        $jenjangs = JenjangPendidikan::where('is_active', true)
+            ->orderBy('urutan')
+            ->get();
+            
+        // Get published beritas with new structure
+        $beritas = Berita::published()
             ->orderBy('published_at', 'desc')
             ->limit(6)
             ->get();
@@ -40,26 +56,43 @@ class LandingController extends Controller
         if ($gelombangAktif) {
             $gelombangAktif->sisa_kuota = $gelombangAktif->kuota - $gelombangAktif->pendaftarans_count;
         }
+        
+        // Check if user is logged in
+        $isLoggedIn = Auth::guard('pendaftaran')->check();
+        $user = null;
+        
+        if ($isLoggedIn) {
+            $user = Auth::guard('pendaftaran')->user();
+        }
             
         return view('client.landing', compact(
             'fasilitas', 
-            'programs', 
+            'programs',
+            'ekstrakurikulers',
+            'tahapans',
+            'jenjangs',
             'beritas',
             'tahunAjaranAktif',
-            'gelombangAktif'
+            'gelombangAktif',
+            'isLoggedIn',
+            'user'
         ));
     }
 
     public function beritaIndex(Request $request)
     {
-        $query = Berita::where('is_published', true)
-            ->whereNotNull('published_at');
+        $query = Berita::published();
             
         if ($request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('judul', 'like', '%' . $request->search . '%')
-                  ->orWhere('konten', 'like', '%' . $request->search . '%');
+                  ->orWhere('content', 'like', '%' . $request->search . '%')
+                  ->orWhere('excerpt', 'like', '%' . $request->search . '%');
             });
+        }
+        
+        if ($request->kategori) {
+            $query->where('kategori', $request->kategori);
         }
         
         $beritas = $query->orderBy('published_at', 'desc')
@@ -71,11 +104,18 @@ class LandingController extends Controller
     public function beritaShow($slug)
     {
         $berita = Berita::where('slug', $slug)
-            ->where('is_published', true)
+            ->published()
             ->firstOrFail();
             
-        $beritaTerkait = Berita::where('is_published', true)
+        // Increment views
+        $berita->incrementViews();
+        
+        // Get related beritas
+        $beritaTerkait = Berita::published()
             ->where('id', '!=', $berita->id)
+            ->when($berita->kategori, function($query) use ($berita) {
+                return $query->where('kategori', $berita->kategori);
+            })
             ->latest('published_at')
             ->limit(3)
             ->get();

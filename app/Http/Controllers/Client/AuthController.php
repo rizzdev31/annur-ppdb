@@ -9,7 +9,7 @@ use App\Models\ActivityLog;
 
 class AuthController extends Controller
 {
-    public function showLogin()
+    public function showLogin(Request $request)
     {
         if (Auth::guard('pendaftaran')->check()) {
             return redirect()->route('santri.dashboard');
@@ -43,7 +43,27 @@ class AuthController extends Controller
                 ]);
             }
             
-            return redirect()->intended(route('santri.dashboard'))
+            // Smart redirect logic
+            $redirectTo = route('santri.dashboard'); // Default redirect
+            
+            // Check if there's a redirect_to parameter
+            if ($request->has('redirect_to')) {
+                $redirectTo = $request->redirect_to;
+            }
+            // Check if there's an intended URL in session
+            elseif (session()->has('url.intended')) {
+                $redirectTo = session('url.intended');
+                session()->forget('url.intended');
+            }
+            // Check Laravel's intended URL
+            elseif ($intended = redirect()->intended()->getTargetUrl()) {
+                // Make sure it's not the login page itself
+                if (!str_contains($intended, 'login')) {
+                    $redirectTo = $intended;
+                }
+            }
+            
+            return redirect($redirectTo)
                 ->with('success', 'Selamat datang, ' . $user->nama_lengkap);
         }
 
@@ -74,7 +94,8 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        return redirect()->route('santri.login')
+        // Redirect to home page after logout instead of login page
+        return redirect()->route('home')
             ->with('success', 'Anda berhasil logout');
     }
 }

@@ -139,7 +139,7 @@
                     </div>
                 </a>
                 
-                <a href="#" class="block p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
+                <a href="{{ route('admin.token.index') }}" class="block p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
                     <div class="flex items-center">
                         <svg class="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>

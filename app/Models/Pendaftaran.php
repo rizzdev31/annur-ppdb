@@ -12,18 +12,28 @@ class Pendaftaran extends Authenticatable
 
     /**
      * The table associated with the model.
+     *
+     * @var string
      */
     protected $table = 'pendaftarans';
 
     /**
      * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
+        'tahun_ajaran_id',
+        'gelombang_id',
         'token',
         'nisn',
+        'password',
+        'password_changed',
+        'original_password',
         'nama_lengkap',
         'tempat_lahir',
         'tanggal_lahir',
+        'jenis_kelamin',
         'anak_ke',
         'jumlah_saudara',
         'nama_ayah',
@@ -37,54 +47,57 @@ class Pendaftaran extends Authenticatable
         'kecamatan',
         'alamat_lengkap',
         'asal_sekolah',
-        'jenjang',
         'no_whatsapp',
-        'bukti_pembayaran',
         'ijazah',
         'surat_keterangan_lulus',
         'akta_kelahiran',
         'kartu_keluarga',
-        'password',
-        'original_password',
-        'password_changed',
         'status',
-        'is_credentials_sent',
-        'credentials_sent_at',
-        'gelombang_id',
-        'tahun_ajaran_id',
+        'keterangan',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
         'original_password',
-        'remember_token',
     ];
 
     /**
      * The attributes that should be cast.
+     *
+     * @var array<string, string>
      */
     protected $casts = [
         'tanggal_lahir' => 'date',
-        'credentials_sent_at' => 'datetime',
-        'is_credentials_sent' => 'boolean',
         'password_changed' => 'boolean',
         'anak_ke' => 'integer',
         'jumlah_saudara' => 'integer',
     ];
 
     /**
-     * Get the password for authentication.
+     * Get the tahun ajaran that owns the pendaftaran.
      */
-    public function getAuthPassword()
+    public function tahunAjaran()
     {
-        return $this->password;
+        return $this->belongsTo(TahunAjaran::class);
     }
 
     /**
-     * Get the unique identifier for authentication.
+     * Get the gelombang that owns the pendaftaran.
+     */
+    public function gelombang()
+    {
+        return $this->belongsTo(Gelombang::class);
+    }
+
+    /**
+     * Get the identifier for authentication (username field).
+     *
+     * @return string
      */
     public function getAuthIdentifierName()
     {
@@ -92,23 +105,86 @@ class Pendaftaran extends Authenticatable
     }
 
     /**
-     * Get the unique identifier for the user.
+     * Get the password for the user.
+     *
+     * @return string
      */
-    public function getAuthIdentifier()
+    public function getAuthPassword()
     {
-        return $this->nisn;
+        return $this->password;
     }
 
     /**
-     * Relationships
+     * Scope a query to only include pending pendaftarans.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function gelombang()
+    public function scopePending($query)
     {
-        return $this->belongsTo(Gelombang::class);
+        return $query->where('status', 'pending');
     }
 
-    public function tahunAjaran()
+    /**
+     * Scope a query to only include accepted pendaftarans.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDiterima($query)
     {
-        return $this->belongsTo(TahunAjaran::class);
+        return $query->where('status', 'diterima');
+    }
+
+    /**
+     * Scope a query to only include rejected pendaftarans.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDitolak($query)
+    {
+        return $query->where('status', 'ditolak');
+    }
+
+    /**
+     * Scope a query to only include in selection pendaftarans.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSeleksi($query)
+    {
+        return $query->where('status', 'seleksi');
+    }
+
+    /**
+     * Get status badge color
+     *
+     * @return string
+     */
+    public function getStatusColorAttribute()
+    {
+        return [
+            'pending' => 'yellow',
+            'seleksi' => 'blue',
+            'diterima' => 'green',
+            'ditolak' => 'red',
+        ][$this->status] ?? 'gray';
+    }
+
+    /**
+     * Get status text
+     *
+     * @return string
+     */
+    public function getStatusTextAttribute()
+    {
+        return [
+            'pending' => 'Menunggu Verifikasi',
+            'seleksi' => 'Dalam Proses Seleksi',
+            'diterima' => 'DITERIMA',
+            'ditolak' => 'Tidak Diterima',
+        ][$this->status] ?? 'Unknown';
     }
 }

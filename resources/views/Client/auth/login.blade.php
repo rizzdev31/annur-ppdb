@@ -41,7 +41,8 @@
                                name="nisn" 
                                id="nisn"
                                value="{{ old('nisn') }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('nisn') border-red-500 @enderror"
+                               {{-- This ternary operator fixes the linter error by ensuring only one set of border classes is present in the string --}}
+                               class="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 {{ $errors->has('nisn') ? 'border-2 border-red-500' : 'border border-gray-300' }}"
                                placeholder="Masukkan NISN Anda"
                                required
                                autofocus>
@@ -58,7 +59,8 @@
                         <input type="password" 
                                name="password" 
                                id="password"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('password') border-red-500 @enderror"
+                               {{-- Applying the same fix for the password field --}}
+                               class="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 {{ $errors->has('password') ? 'border-2 border-red-500' : 'border border-gray-300' }}"
                                placeholder="Masukkan Password"
                                required>
                         @error('password')
@@ -72,7 +74,8 @@
                             <input type="checkbox" 
                                    name="remember" 
                                    id="remember"
-                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                   {{-- Added the 'border' class for consistent styling --}}
+                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border border-gray-300 rounded">
                             <label for="remember" class="ml-2 block text-sm text-gray-700">
                                 Ingat saya
                             </label>
@@ -88,11 +91,36 @@
                     </div>
                 </form>
 
+                <!-- WhatsApp Support Button -->
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500">Butuh bantuan?</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="https://wa.me/628123456789?text=Halo%20Admin,%20saya%20butuh%20bantuan%20untuk%20login%20PPDB" 
+                           target="_blank"
+                           class="w-full flex justify-center items-center px-4 py-3 border border-green-500 rounded-lg shadow-sm text-sm font-medium text-green-600 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300">
+                            <i class="fab fa-whatsapp text-xl mr-2"></i>
+                            Hubungi Admin via WhatsApp
+                        </a>
+                    </div>
+                </div>
+
                 <!-- Info -->
                 <div class="mt-6 p-4 bg-blue-50 rounded-lg">
                     <p class="text-sm text-blue-800">
                         <i class="fas fa-info-circle mr-1"></i> 
                         Gunakan NISN dan password yang diberikan saat pendaftaran.
+                    </p>
+                    <p class="text-sm text-blue-800 mt-2">
+                        <i class="fas fa-question-circle mr-1"></i> 
+                        Lupa password? Hubungi admin melalui WhatsApp.
                     </p>
                 </div>
 
@@ -103,6 +131,19 @@
                     </a>
                 </div>
             </div>
+        </div>
+
+        <!-- Floating WhatsApp Button (Optional) -->
+        <div class="fixed bottom-4 right-4 z-50">
+            <a href="https://wa.me/628123456789?text=Halo%20Admin,%20saya%20butuh%20bantuan%20PPDB" 
+               target="_blank"
+               class="flex items-center justify-center w-14 h-14 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition duration-300 hover:scale-110">
+                <i class="fab fa-whatsapp text-2xl"></i>
+            </a>
+            <span class="absolute -top-2 -right-2 flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+            </span>
         </div>
     </div>
 </div>

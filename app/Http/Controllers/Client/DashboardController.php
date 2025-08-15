@@ -13,8 +13,21 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    /**
+     * Check if user is authenticated
+     */
+    protected function checkAuth()
+    {
+        if (!Auth::guard('pendaftaran')->check()) {
+            abort(redirect()->route('santri.login')->with('error', 'Silakan login terlebih dahulu'));
+        }
+    }
+
     public function index()
     {
+        // Manual auth check
+        $this->checkAuth();
+        
         $pendaftaran = Auth::guard('pendaftaran')->user();
         $pendaftaran->load(['gelombang', 'tahunAjaran']);
         
@@ -47,6 +60,9 @@ class DashboardController extends Controller
 
     public function profile()
     {
+        // Manual auth check
+        $this->checkAuth();
+        
         $pendaftaran = Auth::guard('pendaftaran')->user();
         $pendaftaran->load(['gelombang', 'tahunAjaran']);
         
@@ -57,6 +73,9 @@ class DashboardController extends Controller
 
     public function updateProfile(Request $request)
     {
+        // Manual auth check
+        $this->checkAuth();
+        
         $pendaftaran = Auth::guard('pendaftaran')->user();
         
         $rules = [
@@ -115,6 +134,9 @@ class DashboardController extends Controller
 
     public function changePassword(Request $request)
     {
+        // Manual auth check
+        $this->checkAuth();
+        
         $request->validate([
             'current_password' => 'required',
             'password' => 'required|min:6|confirmed',

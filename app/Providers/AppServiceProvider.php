@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Share auth data to all views
+        View::composer('*', function ($view) {
+            $view->with('authUser', Auth::guard('pendaftaran')->user());
+            $view->with('isAuthenticated', Auth::guard('pendaftaran')->check());
+        });
     }
 }
