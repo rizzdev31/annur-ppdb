@@ -1,19 +1,49 @@
 @extends('layouts.client')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-green-600 to-teal-700 flex items-center justify-center py-12 px-4">
-    <div class="max-w-3xl w-full">
-        <!-- Success Card -->
-        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+<!-- Success Page dengan Modern Design -->
+<section class="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 relative overflow-hidden flex items-center justify-center py-12 px-4">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0">
+        <div class="absolute top-0 -left-40 w-80 h-80 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 -right-40 w-80 h-80 bg-emerald-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-32 left-20 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+    
+    <!-- Confetti Animation -->
+    <div class="confetti-container absolute inset-0 pointer-events-none overflow-hidden">
+        @for($i = 0; $i < 50; $i++)
+        <div class="confetti" style="left: {{ rand(0, 100) }}%; animation-delay: {{ rand(0, 3000) / 1000 }}s;"></div>
+        @endfor
+    </div>
+    
+    <div class="max-w-4xl w-full relative z-10">
+        <!-- Main Card -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden animate-fade-in-up">
             <!-- Header Success -->
-            <div class="bg-gradient-to-r from-green-500 to-green-600 p-8 text-center">
-                <div class="mx-auto h-24 w-24 bg-white rounded-full flex items-center justify-center mb-4">
-                    <svg class="h-16 w-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
+            <div class="bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 p-8 sm:p-12 text-center relative overflow-hidden">
+                <!-- Pattern Background -->
+                <div class="absolute inset-0 opacity-10">
+                    <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23FFFFFF" fill-opacity="1"%3E%3Cpath d="M0 40L40 0H20L0 20M40 40V20L20 40"/%3E%3C/g%3E%3C/svg%3E');"></div>
                 </div>
-                <h2 class="text-3xl font-bold text-white mb-2">Pendaftaran Berhasil!</h2>
-                <p class="text-green-100">Selamat! Pendaftaran Anda telah berhasil disimpan dalam sistem kami</p>
+                
+                <!-- Success Icon -->
+                <div class="relative">
+                    <div class="mx-auto w-32 h-32 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-6 animate-bounce-slow">
+                        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center">
+                            <svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3">
+                        Pendaftaran Berhasil! 🎉
+                    </h1>
+                    <p class="text-lg sm:text-xl text-green-100">
+                        Selamat! Anda telah berhasil terdaftar dalam sistem PPDB kami
+                    </p>
+                </div>
             </div>
 
             @if(session('registration_success'))
@@ -21,65 +51,72 @@
                     $data = session('registration_success');
                 @endphp
                 
-                <!-- Info Login Section -->
-                <div class="p-8">
-                    <!-- Alert Penting -->
-                    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6 mb-6">
-                        <div class="flex items-start">
+                <div class="p-6 sm:p-8 lg:p-12">
+                    <!-- Important Alert -->
+                    <div class="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-2xl p-6 mb-8 animate-pulse-slow">
+                        <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
                             <div class="flex-shrink-0">
-                                <svg class="h-6 w-6 text-red-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                </svg>
+                                <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+                                    <i class="fas fa-exclamation-triangle text-white text-xl"></i>
+                                </div>
                             </div>
-                            <div class="ml-3">
-                                <h3 class="text-lg font-bold text-red-800">PENTING! Simpan Informasi Login Ini</h3>
-                                <p class="mt-2 text-sm text-red-700">
-                                    Informasi login di bawah ini hanya ditampilkan SEKALI. 
-                                    Silakan simpan atau screenshot halaman ini untuk referensi Anda.
-                                    Password ini akan dikirimkan juga ke WhatsApp yang terdaftar.
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-red-800 mb-2">
+                                    ⚠️ PENTING! Simpan Informasi Ini
+                                </h3>
+                                <p class="text-red-700 leading-relaxed">
+                                    Informasi login di bawah ini <strong>HANYA DITAMPILKAN SEKALI</strong>. 
+                                    Silakan simpan atau screenshot halaman ini. Password juga akan dikirim ke WhatsApp Anda.
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Card Info Login -->
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 mb-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-key text-blue-600 mr-2"></i> Informasi Login Anda
-                        </h3>
+                    <!-- Login Credentials Card -->
+                    <div class="bg-gradient-to-br from-sky-50 to-blue-50 rounded-2xl p-6 sm:p-8 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <div class="w-10 h-10 bg-gradient-to-br from-sky-400 to-blue-600 rounded-xl flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            Informasi Login Anda
+                        </h2>
                         
-                        <div class="bg-white rounded-lg p-6 space-y-4">
+                        <div class="bg-white rounded-xl p-6 space-y-6 shadow-inner">
                             <!-- Nama -->
-                            <div class="pb-3 border-b border-gray-200">
-                                <p class="text-sm text-gray-500 mb-1">Nama Lengkap</p>
-                                <p class="text-lg font-semibold text-gray-800">{{ $data['nama'] }}</p>
+                            <div class="pb-4 border-b border-gray-200">
+                                <label class="text-sm text-gray-500 font-medium">Nama Lengkap</label>
+                                <p class="text-xl font-bold text-gray-800 mt-1">{{ $data['nama'] }}</p>
                             </div>
 
-                            <!-- Username/NISN -->
-                            <div class="pb-3 border-b border-gray-200">
-                                <p class="text-sm text-gray-500 mb-1">Username (NISN)</p>
-                                <div class="flex items-center justify-between">
-                                    <p class="font-mono text-2xl font-bold text-blue-600">{{ $data['nisn'] }}</p>
-                                    <button onclick="copyToClipboard('{{ $data['nisn'] }}', 'username')" 
-                                            class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-lg text-sm transition duration-300">
-                                        <i class="fas fa-copy"></i> Salin
+                            <!-- NISN -->
+                            <div class="pb-4 border-b border-gray-200">
+                                <label class="text-sm text-gray-500 font-medium">Username (NISN)</label>
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 mt-1">
+                                    <p class="font-mono text-2xl sm:text-3xl font-bold text-sky-600">
+                                        {{ $data['nisn'] }}
+                                    </p>
+                                    <button onclick="copyToClipboard('{{ $data['nisn'] }}', 'NISN')" 
+                                            class="px-4 py-2 bg-sky-100 hover:bg-sky-200 text-sky-700 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center">
+                                        <i class="fas fa-copy mr-2"></i>Salin
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Password -->
-                            <div class="pb-3 border-b border-gray-200">
-                                <p class="text-sm text-gray-500 mb-1">Password Sementara</p>
-                                <div class="flex items-center justify-between">
-                                    <p class="font-mono text-2xl font-bold text-red-600" id="password-text">{{ $data['password'] }}</p>
+                            <div class="pb-4 border-b border-gray-200">
+                                <label class="text-sm text-gray-500 font-medium">Password Sementara</label>
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 mt-1">
+                                    <p class="font-mono text-2xl sm:text-3xl font-bold text-red-600" id="password-text">
+                                        {{ $data['password'] }}
+                                    </p>
                                     <div class="flex space-x-2">
                                         <button onclick="togglePassword()" 
-                                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm transition duration-300">
+                                                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors duration-300">
                                             <i class="fas fa-eye" id="toggle-icon"></i>
                                         </button>
-                                        <button onclick="copyToClipboard('{{ $data['password'] }}', 'password')" 
-                                                class="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded-lg text-sm transition duration-300">
-                                            <i class="fas fa-copy"></i> Salin
+                                        <button onclick="copyToClipboard('{{ $data['password'] }}', 'Password')" 
+                                                class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg font-medium transition-colors duration-300 flex items-center">
+                                            <i class="fas fa-copy mr-2"></i>Salin
                                         </button>
                                     </div>
                                 </div>
@@ -87,89 +124,225 @@
 
                             <!-- WhatsApp -->
                             <div>
-                                <p class="text-sm text-gray-500 mb-1">WhatsApp Terdaftar</p>
-                                <p class="text-lg font-semibold text-gray-800">
-                                    <i class="fab fa-whatsapp text-green-500"></i> {{ $data['whatsapp'] }}
+                                <label class="text-sm text-gray-500 font-medium">WhatsApp Terdaftar</label>
+                                <p class="text-xl font-semibold text-gray-800 mt-1">
+                                    <i class="fab fa-whatsapp text-green-500 mr-2"></i>
+                                    {{ $data['whatsapp'] }}
                                 </p>
                             </div>
                         </div>
 
-                        <!-- Info Tambahan -->
-                        <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <p class="text-sm text-yellow-800">
-                                <i class="fas fa-info-circle"></i> 
-                                <strong>Catatan:</strong> Password ini bersifat sementara. 
-                                Anda dapat mengubahnya setelah login pertama kali untuk keamanan akun Anda.
+                        <!-- Note -->
+                        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                            <p class="text-sm text-yellow-800 flex items-start">
+                                <i class="fas fa-info-circle mt-0.5 mr-2 flex-shrink-0"></i>
+                                <span><strong>Catatan:</strong> Password ini bersifat sementara. Anda wajib mengubahnya saat login pertama kali demi keamanan akun.</span>
                             </p>
                         </div>
                     </div>
 
-                    <!-- Langkah Selanjutnya -->
-                    <div class="bg-gray-50 rounded-xl p-6 mb-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">
-                            <i class="fas fa-list-ol text-gray-600 mr-2"></i> Langkah Selanjutnya
+                    <!-- WhatsApp Group CTA -->
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 mb-8 text-white">
+                        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                            <div class="flex-shrink-0">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center animate-bounce">
+                                    <i class="fab fa-whatsapp text-4xl text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 text-center sm:text-left">
+                                <h3 class="text-xl font-bold mb-1">Wajib Bergabung Grup WhatsApp!</h3>
+                                <p class="text-green-100">Dapatkan informasi terbaru dan pengumuman penting</p>
+                            </div>
+                            <a href="https://chat.whatsapp.com/FOR34ULSJZvHmduOCOgDZS?mode=ac_t" 
+                               target="_blank"
+                               class="px-6 py-3 bg-white text-green-600 rounded-xl font-bold hover:bg-green-50 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                <i class="fab fa-whatsapp mr-2"></i>Gabung Sekarang
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Next Steps -->
+                    <div class="bg-gray-50 rounded-2xl p-6 sm:p-8 mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                            <div class="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-list-ol text-sm"></i>
+                            </div>
+                            Langkah Selanjutnya
                         </h3>
-                        <ol class="space-y-3">
-                            <li class="flex items-start">
-                                <span class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
-                                <div class="ml-3">
-                                    <p class="text-gray-700">Simpan atau screenshot informasi login di atas</p>
+                        
+                        <div class="space-y-4">
+                            @php
+                                $steps = [
+                                    ['icon' => 'fa-save', 'color' => 'blue', 'text' => 'Simpan atau screenshot informasi login di atas'],
+                                    ['icon' => 'fa-mobile-alt', 'color' => 'green', 'text' => 'Cek WhatsApp untuk informasi login yang dikirimkan'],
+                                    ['icon' => 'fa-users', 'color' => 'purple', 'text' => 'Bergabung ke grup WhatsApp resmi PPDB'],
+                                    ['icon' => 'fa-sign-in-alt', 'color' => 'indigo', 'text' => 'Login dengan NISN dan password yang diberikan'],
+                                    ['icon' => 'fa-bell', 'color' => 'yellow', 'text' => 'Pantau pengumuman melalui dashboard'],
+                                ];
+                            @endphp
+                            
+                            @foreach($steps as $index => $step)
+                            <div class="flex items-start space-x-4 animate-fade-in-up" style="animation-delay: {{ ($index + 1) * 100 }}ms">
+                                <div class="flex-shrink-0 w-10 h-10 bg-{{ $step['color'] }}-500 text-white rounded-full flex items-center justify-center font-bold shadow-lg">
+                                    {{ $index + 1 }}
                                 </div>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
-                                <div class="ml-3">
-                                    <p class="text-gray-700">Cek WhatsApp Anda untuk informasi login yang dikirimkan</p>
+                                <div class="flex-1">
+                                    <p class="text-gray-700 leading-relaxed">{{ $step['text'] }}</p>
                                 </div>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
-                                <div class="ml-3">
-                                    <p class="text-gray-700">Login menggunakan NISN dan password yang diberikan</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
-                                <div class="ml-3">
-                                    <p class="text-gray-700">Tunggu pengumuman hasil seleksi melalui dashboard</p>
-                                </div>
-                            </li>
-                        </ol>
+                            </div>
+                            @endforeach
+                        </div>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <a href="{{ route('santri.login') }}" 
-                           class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition duration-300 shadow-lg">
-                            <i class="fas fa-sign-in-alt mr-2"></i> Login Sekarang
+                           class="px-6 py-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white text-center rounded-xl font-bold hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            Login Sekarang
                         </a>
-                        <button onclick="window.print()" 
-                                class="flex-1 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition duration-300 shadow-lg">
-                            <i class="fas fa-print mr-2"></i> Cetak Halaman
-                        </button>
+                        <a href="{{ route('home') }}" 
+                           class="px-6 py-4 bg-white border-2 border-gray-300 text-gray-700 text-center rounded-xl font-bold hover:bg-gray-50 transition-all duration-300 flex items-center justify-center">
+                            <i class="fas fa-home mr-2"></i>
+                            Ke Beranda
+                        </a>
                     </div>
                 </div>
             @else
-                <!-- Jika tidak ada data session -->
+                <!-- Fallback Content -->
                 <div class="p-8 text-center">
-                    <p class="text-gray-600 mb-4">Pendaftaran Anda telah berhasil disimpan.</p>
+                    <p class="text-gray-600 mb-6">Pendaftaran Anda telah berhasil disimpan dalam sistem.</p>
                     <a href="{{ route('santri.login') }}" 
-                       class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl font-bold hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
                         Ke Halaman Login
                     </a>
                 </div>
             @endif
         </div>
 
-        <!-- Footer Info -->
-        <div class="mt-6 text-center text-white">
-            <p class="text-sm">
+        <!-- Help Footer -->
+        <div class="mt-8 text-center">
+            <p class="text-gray-600">
                 Butuh bantuan? Hubungi kami di 
-                <a href="https://wa.me/628123456789" class="underline">WhatsApp</a>
+                <a href="https://wa.me/6281234567890" target="_blank" class="text-green-600 hover:text-green-700 font-semibold">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
             </p>
         </div>
     </div>
+</section>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-4 rounded-xl shadow-2xl transform translate-y-full transition-transform duration-300 z-50 flex items-center">
+    <i class="fas fa-check-circle mr-3 text-xl"></i>
+    <span id="toast-message">Berhasil disalin!</span>
 </div>
+
+@push('styles')
+<style>
+    /* Animations */
+    @keyframes blob {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(20px, -50px) scale(1.1); }
+        50% { transform: translate(-20px, 20px) scale(1); }
+        75% { transform: translate(50px, -20px) scale(0.9); }
+    }
+    
+    @keyframes fade-in-up {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes bounce-slow {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-slow {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+    }
+    
+    @keyframes confetti-fall {
+        0% {
+            transform: translateY(-100vh) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) rotate(720deg);
+            opacity: 0;
+        }
+    }
+    
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+    
+    .animate-fade-in-up {
+        animation: fade-in-up 0.8s ease-out both;
+    }
+    
+    .animate-bounce-slow {
+        animation: bounce-slow 3s ease-in-out infinite;
+    }
+    
+    .animate-pulse-slow {
+        animation: pulse-slow 3s ease-in-out infinite;
+    }
+    
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+    
+    /* Confetti */
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24, #f0932b, #eb4d4b, #6ab04c);
+        animation: confetti-fall 3s linear infinite;
+    }
+    
+    /* Toast Animation */
+    .toast-show {
+        transform: translateY(0) !important;
+    }
+    
+    /* Print Styles */
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        
+        .bg-gradient-to-br {
+            background: white !important;
+        }
+        
+        button {
+            display: none !important;
+        }
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 640px) {
+        .confetti {
+            width: 6px;
+            height: 6px;
+        }
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script>
@@ -180,7 +353,7 @@ function togglePassword() {
     const toggleIcon = document.getElementById('toggle-icon');
     
     if (passwordVisible) {
-        passwordText.textContent = '••••••••';
+        passwordText.textContent = '••••••••••';
         toggleIcon.classList.remove('fa-eye');
         toggleIcon.classList.add('fa-eye-slash');
     } else {
@@ -193,52 +366,38 @@ function togglePassword() {
 
 function copyToClipboard(text, type) {
     navigator.clipboard.writeText(text).then(function() {
-        // Show toast notification
-        showToast(`${type === 'username' ? 'Username' : 'Password'} berhasil disalin!`);
+        showToast(`${type} berhasil disalin!`);
     }, function(err) {
-        console.error('Error copying text: ', err);
+        // Fallback for older browsers
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showToast(`${type} berhasil disalin!`);
     });
 }
 
 function showToast(message) {
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = 'fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
-    toast.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${message}`;
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
     
-    document.body.appendChild(toast);
+    toastMessage.textContent = message;
+    toast.classList.add('toast-show');
     
-    // Remove toast after 3 seconds
     setTimeout(() => {
-        toast.remove();
+        toast.classList.remove('toast-show');
     }, 3000);
 }
+
+// Auto-hide confetti after animation
+setTimeout(() => {
+    const confettiContainer = document.querySelector('.confetti-container');
+    if (confettiContainer) {
+        confettiContainer.style.display = 'none';
+    }
+}, 5000);
 </script>
-
-<style>
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-fade-in {
-    animation: fade-in 0.3s ease-out;
-}
-
-@media print {
-    .bg-gradient-to-br {
-        background: white !important;
-    }
-    button {
-        display: none !important;
-    }
-}
-</style>
 @endpush
 @endsection

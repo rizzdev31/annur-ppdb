@@ -286,11 +286,11 @@
                             <i class="fab fa-whatsapp mr-1 text-teal-500"></i> Nomor WhatsApp <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="no_whatsapp" value="{{ old('no_whatsapp') }}" 
-                               placeholder="Contoh: 08123456789"
+                               placeholder="Contoh: +628123456789"
                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition duration-300"
                                required>
                         <p class="text-xs text-gray-500 mt-2">
-                            <i class="fas fa-info-circle"></i> Pastikan nomor WhatsApp aktif untuk menerima informasi pendaftaran
+                            <i class="fas fa-info-circle"></i> Pastikan nomor WhatsApp Wajib di awali dengan +62xxxxxx
                         </p>
                     </div>
                 </div>

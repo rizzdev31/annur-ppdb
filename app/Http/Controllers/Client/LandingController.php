@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Auth;
 
 class LandingController extends Controller
 {
+    /**
+     * Display the landing page
+     */
     public function index()
     {
         // Get active data from database
@@ -39,14 +42,22 @@ class LandingController extends Controller
             ->orderBy('urutan')
             ->get();
             
-        // Get published beritas with new structure
+        // Get highlighted berita for hero section
+        $highlightedBerita = Berita::published()
+            ->where('is_highlighted', true)
+            ->first();
+            
+        // Get published beritas (exclude highlighted from list)
         $beritas = Berita::published()
+            ->where('is_highlighted', false)
             ->orderBy('published_at', 'desc')
             ->limit(6)
             ->get();
             
+        // Get active tahun ajaran
         $tahunAjaranAktif = TahunAjaran::where('is_active', true)->first();
         
+        // Get active gelombang
         $gelombangAktif = Gelombang::where('is_active', true)
             ->whereDate('tanggal_mulai', '<=', now())
             ->whereDate('tanggal_selesai', '>=', now())
@@ -65,6 +76,7 @@ class LandingController extends Controller
             $user = Auth::guard('pendaftaran')->user();
         }
             
+        // Pass all variables to view (INCLUDING highlightedBerita!)
         return view('client.landing', compact(
             'fasilitas', 
             'programs',
@@ -72,6 +84,7 @@ class LandingController extends Controller
             'tahapans',
             'jenjangs',
             'beritas',
+            'highlightedBerita',  // <-- IMPORTANT: This was missing!
             'tahunAjaranAktif',
             'gelombangAktif',
             'isLoggedIn',
@@ -79,10 +92,14 @@ class LandingController extends Controller
         ));
     }
 
+    /**
+     * Display the berita index page
+     */
     public function beritaIndex(Request $request)
     {
         $query = Berita::published();
             
+        // Search functionality
         if ($request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('judul', 'like', '%' . $request->search . '%')
@@ -91,26 +108,32 @@ class LandingController extends Controller
             });
         }
         
+        // Filter by kategori
         if ($request->kategori) {
             $query->where('kategori', $request->kategori);
         }
         
+        // Paginate results
         $beritas = $query->orderBy('published_at', 'desc')
             ->paginate(9);
             
         return view('client.berita.index', compact('beritas'));
     }
 
+    /**
+     * Display single berita
+     */
     public function beritaShow($slug)
     {
+        // Find berita by slug
         $berita = Berita::where('slug', $slug)
             ->published()
             ->firstOrFail();
             
-        // Increment views
+        // Increment views counter
         $berita->incrementViews();
         
-        // Get related beritas
+        // Get related beritas (same category if exists)
         $beritaTerkait = Berita::published()
             ->where('id', '!=', $berita->id)
             ->when($berita->kategori, function($query) use ($berita) {

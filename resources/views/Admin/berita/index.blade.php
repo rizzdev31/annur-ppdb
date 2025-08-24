@@ -70,6 +70,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Featured</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Hero</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Views</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                 </tr>

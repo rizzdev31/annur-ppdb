@@ -34,6 +34,7 @@ class Pendaftaran extends Authenticatable
         'tempat_lahir',
         'tanggal_lahir',
         'jenis_kelamin',
+        'jenjang',
         'anak_ke',
         'jumlah_saudara',
         'nama_ayah',
@@ -48,12 +49,16 @@ class Pendaftaran extends Authenticatable
         'alamat_lengkap',
         'asal_sekolah',
         'no_whatsapp',
+        'bukti_pembayaran', // TAMBAHKAN INI
         'ijazah',
         'surat_keterangan_lulus',
         'akta_kelahiran',
         'kartu_keluarga',
         'status',
         'keterangan',
+        'is_credentials_sent',
+        'credentials_sent_at',
+        'remember_token'
     ];
 
     /**
@@ -76,6 +81,8 @@ class Pendaftaran extends Authenticatable
         'password_changed' => 'boolean',
         'anak_ke' => 'integer',
         'jumlah_saudara' => 'integer',
+        'is_credentials_sent' => 'boolean',
+        'credentials_sent_at' => 'datetime',
     ];
 
     /**

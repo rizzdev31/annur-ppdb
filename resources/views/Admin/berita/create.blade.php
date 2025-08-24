@@ -177,6 +177,22 @@
                                 <span class="text-gray-700">Berita Utama</span>
                             </label>
                         </div>
+                        <div>
+                            <label class="flex items-center">
+                                <input type="checkbox" 
+                                       name="is_highlighted" 
+                                       value="1" 
+                                       {{ old('is_highlighted') ? 'checked' : '' }}
+                                       class="mr-2">
+                                <span class="text-gray-700 font-semibold">
+                                    <i class="fas fa-star text-yellow-500 mr-1"></i>
+                                    Tampilkan di Hero Landing Page
+                                </span>
+                            </label>
+                            <p class="text-xs text-gray-500 mt-1 ml-6">
+                                Berita akan ditampilkan sebagai highlight utama di halaman depan
+                            </p>
+                        </div>
                     </div>
                 </div>
 

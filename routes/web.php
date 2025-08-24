@@ -22,26 +22,31 @@ use App\Http\Controllers\Client\SantriProfileController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\AccountManagementController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\AdminProfileController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Di sini Anda dapat mendaftarkan rute web untuk aplikasi Anda. Rute-rute
-| ini dimuat oleh RouteServiceProvider dan semuanya akan
-| ditugaskan ke grup middleware "web". Buat sesuatu yang hebat!
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
 |
 */
 
-// ===== CLIENT ROUTES =====
+// ========================================
+// CLIENT/PUBLIC ROUTES
+// ========================================
+
+// Landing Page
 Route::get('/', [LandingController::class, 'index'])->name('home');
 
 // Berita Client
 Route::get('/berita', [LandingController::class, 'beritaIndex'])->name('berita.index');
 Route::get('/berita/{slug}', [LandingController::class, 'beritaShow'])->name('berita.show');
 
-// PPDB Client Routes
+// PPDB Client Routes (Public Registration)
 Route::prefix('ppdb')->name('ppdb.')->group(function () {
     Route::get('/token', [PpdbController::class, 'showTokenForm'])->name('token');
     Route::post('/verify-token', [PpdbController::class, 'verifyToken'])->name('verify-token');
@@ -50,7 +55,7 @@ Route::prefix('ppdb')->name('ppdb.')->group(function () {
     Route::get('/success', [PpdbController::class, 'success'])->name('success');
 });
 
-// Santri Auth & Dashboard
+// Santri/Client Authentication & Dashboard
 Route::prefix('santri')->name('santri.')->group(function () {
     // Routes for guests (not logged in)
     Route::middleware('guest:pendaftaran')->group(function () {
@@ -58,7 +63,7 @@ Route::prefix('santri')->name('santri.')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
     });
 
-    // Routes for authenticated users
+    // Routes for authenticated santri/clients
     Route::middleware('auth:pendaftaran')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
@@ -68,17 +73,21 @@ Route::prefix('santri')->name('santri.')->group(function () {
     });
 });
 
-// ===== ADMIN ROUTES =====
+// ========================================
+// ADMIN ROUTES
+// ========================================
+
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    // Rute untuk admin yang belum login (Guest)
+    // Admin Guest Routes (Not Logged In)
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [AdminAuthController::class, 'login']);
     });
 
-    // Rute untuk admin yang sudah login (Authenticated)
+    // Admin Authenticated Routes
     Route::middleware('auth')->group(function () {
+        
         // Logout
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
@@ -86,7 +95,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard');
         Route::get('/dashboard', [DashboardAdminController::class, 'index']); // Alias untuk dashboard
 
-        // Account Management Routes
+        // ========================================
+        // ACCOUNT MANAGEMENT
+        // ========================================
         Route::prefix('accounts')->name('accounts.')->group(function () {
             // Dashboard
             Route::get('/', [AccountManagementController::class, 'dashboard'])->name('dashboard');
@@ -103,24 +114,43 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{id}/toggle-status', [AccountManagementController::class, 'adminToggleStatus'])->name('toggle-status');
             });
 
-            // Client Management Routes
+            // Client Management
             Route::prefix('client')->name('client.')->group(function () {
+                // Routes WITHOUT parameters (must be defined FIRST)
                 Route::get('/', [AccountManagementController::class, 'clientIndex'])->name('index');
+                Route::get('/export', [AccountManagementController::class, 'clientExport'])->name('export');
+                Route::get('/export-csv', [AccountManagementController::class, 'clientExportCSV'])->name('export.csv');
+                
+                // Routes WITH parameters (defined AFTER routes without parameters)
                 Route::get('/{id}', [AccountManagementController::class, 'clientShow'])->name('show');
                 Route::get('/{id}/edit', [AccountManagementController::class, 'clientEdit'])->name('edit');
                 Route::put('/{id}', [AccountManagementController::class, 'clientUpdate'])->name('update');
                 Route::delete('/{id}', [AccountManagementController::class, 'clientDestroy'])->name('destroy');
                 Route::post('/{id}/reset-password', [AccountManagementController::class, 'clientResetPassword'])->name('reset-password');
                 Route::get('/{id}/show-password', [AccountManagementController::class, 'clientShowPassword'])->name('show-password');
-                Route::get('/export', [AccountManagementController::class, 'clientExport'])->name('export');
-                Route::get('/export-csv', [AccountManagementController::class, 'clientExportCSV'])->name('export.csv');
             });
 
             // Activity Logs
             Route::get('/logs', [AccountManagementController::class, 'activityLogs'])->name('logs');
         });
 
-        // User Management (Santri)
+        // ========================================
+        // ADMIN PROFILE & SETTINGS
+        // ========================================
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', [AdminProfileController::class, 'profile'])->name('index');
+            Route::put('/', [AdminProfileController::class, 'updateProfile'])->name('update');
+            Route::put('/password', [AdminProfileController::class, 'updatePassword'])->name('update-password');
+        });
+
+        Route::prefix('settings')->name('settings.')->group(function () {
+            Route::get('/', [AdminProfileController::class, 'settings'])->name('index');
+            Route::put('/', [AdminProfileController::class, 'updateSettings'])->name('update');
+        });
+
+        // ========================================
+        // USER MANAGEMENT (SANTRI)
+        // ========================================
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('/', [UserManagementController::class, 'index'])->name('index');
             Route::get('/{id}', [UserManagementController::class, 'show'])->name('show');
@@ -130,7 +160,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/{id}/send-login-info', [UserManagementController::class, 'sendLoginInfo'])->name('send-login-info');
         });
 
-        // PPDB Management
+        // ========================================
+        // PPDB MANAGEMENT
+        // ========================================
         Route::prefix('ppdb')->name('ppdb.')->group(function () {
             Route::get('/', [PpdbAdminController::class, 'index'])->name('index');
             Route::post('/generate-tokens', [PpdbAdminController::class, 'generateTokens'])->name('generate-tokens');
@@ -140,19 +172,41 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/{id}', [PpdbAdminController::class, 'destroy'])->name('destroy');
         });
 
-        // CMS Management
+        // ========================================
+        // CMS MANAGEMENT
+        // ========================================
+        
+        // Fasilitas
         Route::resource('fasilitas', FasilitasController::class);
+        
+        // Program Unggulan
         Route::resource('program', ProgramController::class);
+        
+        // Ekstrakurikuler
         Route::resource('ekstrakurikuler', EkstrakurikulerController::class);
+        
+        // Tahapan Pendaftaran
         Route::resource('tahapan', TahapanPendaftaranController::class);
+        
+        // Jenjang Pendidikan
         Route::resource('jenjang', JenjangPendidikanController::class);
+        
+        // Berita
         Route::resource('berita', BeritaController::class);
 
-        // Tahun Ajaran & Gelombang
+        // ========================================
+        // TAHUN AJARAN & GELOMBANG
+        // ========================================
+        
+        // Tahun Ajaran
         Route::resource('tahun-ajaran', TahunAjaranController::class);
+        
+        // Gelombang
         Route::resource('gelombang', GelombangController::class);
 
-        // Token Management
+        // ========================================
+        // TOKEN MANAGEMENT
+        // ========================================
         Route::prefix('token')->name('token.')->group(function () {
             Route::get('/', [TokenController::class, 'index'])->name('index');
             Route::post('/generate', [TokenController::class, 'generate'])->name('generate');
@@ -162,7 +216,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
-// Fallback route
+// ========================================
+// FALLBACK ROUTE
+// ========================================
 Route::fallback(function () {
     return redirect()->route('home');
 });

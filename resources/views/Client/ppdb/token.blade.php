@@ -67,7 +67,7 @@
             <p class="text-blue-200 mb-4">Belum punya token pendaftaran?</p>
             {{-- Replace the phone number with your admin's WhatsApp number --}}
             {{-- A pre-filled message is added to make it easier for users --}}
-            <a href="https://wa.me/6281234567890?text=Assalamualaikum,%20saya%20ingin%20meminta%20token%20pendaftaran%20PPDB." 
+            <a href="https://wa.me/6282141731633?text=Assalamualaikum,%20saya%20ingin%20meminta%20token%20pendaftaran%20PPDB." 
                target="_blank" 
                class="inline-flex items-center justify-center bg-green-500 text-white py-2 px-6 rounded-full font-semibold hover:bg-green-600 transition duration-300 shadow-lg">
                 <i class="fab fa-whatsapp mr-2"></i> Minta Token via WhatsApp

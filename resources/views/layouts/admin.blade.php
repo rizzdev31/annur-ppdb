@@ -90,9 +90,15 @@
         <!-- User Info -->
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex items-center">
-                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
-                </div>
+                @if(Auth::user()->avatar)
+                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" 
+                         alt="Avatar" 
+                         class="w-10 h-10 rounded-full object-cover">
+                @else
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                        {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
+                    </div>
+                @endif
                 <div class="ml-3">
                     <p class="text-sm font-medium text-gray-700">{{ Auth::user()->name ?? 'Administrator' }}</p>
                     <p class="text-xs text-gray-500">{{ Auth::user()->email ?? 'admin@ppdb.com' }}</p>
@@ -197,6 +203,23 @@
                 </a>
             </div>
             
+            <!-- Settings & Profile -->
+            <div class="mt-4">
+                <p class="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase">Pengaturan</p>
+                
+                <a href="{{ route('admin.profile.index') }}" 
+                   class="sidebar-link flex items-center px-3 py-2 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-circle w-5 mr-3"></i>
+                    <span>Profile Saya</span>
+                </a>
+                
+                <a href="{{ route('admin.settings.index') }}" 
+                   class="sidebar-link flex items-center px-3 py-2 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                    <i class="fas fa-cog w-5 mr-3"></i>
+                    <span>Pengaturan Sistem</span>
+                </a>
+            </div>
+            
         </nav>
         
         <!-- Logout Button -->
@@ -237,7 +260,7 @@
                     
                     <!-- Visit Site -->
                     <a href="{{ route('home') }}" target="_blank" 
-                       class="text-gray-600 hover:text-gray-900">
+                       class="text-gray-600 hover:text-gray-900" title="Lihat Website">
                         <i class="fas fa-external-link-alt text-xl"></i>
                     </a>
                     
@@ -245,9 +268,15 @@
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open" 
                                 class="flex items-center text-gray-600 hover:text-gray-900">
-                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-2">
-                                {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
-                            </div>
+                            @if(Auth::user()->avatar)
+                                <img src="{{ asset('storage/' . Auth::user()->avatar) }}" 
+                                     alt="Avatar" 
+                                     class="w-8 h-8 rounded-full object-cover mr-2">
+                            @else
+                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-2">
+                                    {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
+                                </div>
+                            @endif
                             <i class="fas fa-chevron-down text-sm"></i>
                         </button>
                         
@@ -255,10 +284,10 @@
                              @click.away="open = false"
                              x-cloak
                              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <a href="{{ route('admin.profile.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-user mr-2"></i>Profile
                             </a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <a href="{{ route('admin.settings.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-cog mr-2"></i>Settings
                             </a>
                             <hr class="my-2">
@@ -287,6 +316,39 @@
             </div>
         </footer>
     </div>
+    
+    <!-- Toast Notification (Optional) -->
+    @if(session('success'))
+    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
+         class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform translate-y-2"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 transform translate-y-0"
+         x-transition:leave-end="opacity-0 transform translate-y-2">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            {{ session('success') }}
+        </div>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
+         class="fixed bottom-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform translate-y-2"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 transform translate-y-0"
+         x-transition:leave-end="opacity-0 transform translate-y-2">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            {{ session('error') }}
+        </div>
+    </div>
+    @endif
     
     <!-- Scripts -->
     @stack('scripts')

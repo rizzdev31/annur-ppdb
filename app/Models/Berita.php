@@ -10,6 +10,9 @@ class Berita extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     */
     protected $fillable = [
         'judul',
         'slug',
@@ -19,6 +22,7 @@ class Berita extends Model
         'kategori',
         'author',
         'is_featured',
+        'is_highlighted',
         'image',
         'image_alt',
         'meta_description',
@@ -27,9 +31,13 @@ class Berita extends Model
         'views'
     ];
 
+    /**
+     * The attributes that should be cast.
+     */
     protected $casts = [
         'published_at' => 'datetime',
         'is_featured' => 'boolean',
+        'is_highlighted' => 'boolean',
         'views' => 'integer'
     ];
 
@@ -40,10 +48,16 @@ class Berita extends Model
     {
         parent::boot();
 
-        // Auto generate slug from title
+        // Auto generate slug from title when creating
         static::creating(function ($berita) {
             if (empty($berita->slug)) {
                 $berita->slug = Str::slug($berita->judul);
+                
+                // Make sure slug is unique
+                $count = static::whereRaw("slug RLIKE '^{$berita->slug}(-[0-9]+)?$'")->count();
+                if ($count > 0) {
+                    $berita->slug = $berita->slug . '-' . ($count + 1);
+                }
             }
             
             // Auto generate excerpt from content if not provided
@@ -57,10 +71,18 @@ class Berita extends Model
             }
         });
 
+        // Handle updates
         static::updating(function ($berita) {
             // Update slug if title changed
-            if ($berita->isDirty('judul')) {
+            if ($berita->isDirty('judul') && !$berita->isDirty('slug')) {
                 $berita->slug = Str::slug($berita->judul);
+                
+                // Make sure slug is unique
+                $count = static::where('id', '!=', $berita->id)
+                              ->whereRaw("slug RLIKE '^{$berita->slug}(-[0-9]+)?$'")->count();
+                if ($count > 0) {
+                    $berita->slug = $berita->slug . '-' . ($count + 1);
+                }
             }
             
             // Auto generate excerpt from content if not provided
@@ -83,6 +105,14 @@ class Berita extends Model
         return $query->where('status', 'published')
                      ->whereNotNull('published_at')
                      ->where('published_at', '<=', now());
+    }
+
+    /**
+     * Scope for highlighted berita (hero section)
+     */
+    public function scopeHighlighted($query)
+    {
+        return $query->where('is_highlighted', true);
     }
 
     /**
@@ -136,7 +166,9 @@ class Berita extends Model
      */
     public function getIsPublishedAttribute()
     {
-        return $this->status === 'published' && $this->published_at && $this->published_at <= now();
+        return $this->status === 'published' && 
+               $this->published_at && 
+               $this->published_at <= now();
     }
 
     /**
@@ -145,5 +177,49 @@ class Berita extends Model
     public function incrementViews()
     {
         $this->increment('views');
+    }
+
+    /**
+     * Set as highlighted (only one can be highlighted at a time)
+     */
+    public function setAsHighlighted()
+    {
+        // Remove highlight from all other beritas
+        static::where('is_highlighted', true)->update(['is_highlighted' => false]);
+        
+        // Set this berita as highlighted
+        $this->update(['is_highlighted' => true]);
+    }
+
+    /**
+     * Remove highlight from this berita
+     */
+    public function removeHighlight()
+    {
+        $this->update(['is_highlighted' => false]);
+    }
+
+    /**
+     * Toggle featured status
+     */
+    public function toggleFeatured()
+    {
+        $this->update(['is_featured' => !$this->is_featured]);
+    }
+
+    /**
+     * Check if this berita is highlighted
+     */
+    public function isHighlighted()
+    {
+        return $this->is_highlighted;
+    }
+
+    /**
+     * Check if this berita is featured
+     */
+    public function isFeatured()
+    {
+        return $this->is_featured;
     }
 }

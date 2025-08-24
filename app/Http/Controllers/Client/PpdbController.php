@@ -68,9 +68,9 @@ class PpdbController extends Controller
             'kecamatan' => 'required|string|max:255',
             'alamat_lengkap' => 'required|string',
             'asal_sekolah' => 'required|string|max:255',
-            'jenjang' => 'required|in:SD,SMP,SMA',
+            'jenjang' => 'nullable|in:SD,SMP,SMA', // Make nullable if not always present
             'no_whatsapp' => 'required|string|max:20',
-            'bukti_pembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'bukti_pembayaran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // MAKE NULLABLE/OPTIONAL
             // Dokumen opsional
             'ijazah' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'surat_keterangan_lulus' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
@@ -93,12 +93,21 @@ class PpdbController extends Controller
         $validated['gelombang_id'] = $token->gelombang_id;
         $validated['tahun_ajaran_id'] = $token->gelombang->tahun_ajaran_id;
 
-        // Handle file uploads
+        // Handle file uploads - Create uploads directory if not exists
+        $uploadPath = public_path('uploads');
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0777, true);
+        }
+
+        // Handle bukti pembayaran if uploaded
         if ($request->hasFile('bukti_pembayaran')) {
             $file = $request->file('bukti_pembayaran');
             $filename = time() . '_bukti_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads'), $filename);
+            $file->move($uploadPath, $filename);
             $validated['bukti_pembayaran'] = $filename;
+        } else {
+            // Set default or null if not uploaded
+            $validated['bukti_pembayaran'] = null; // Or you can set a default value
         }
 
         // Handle optional documents
@@ -107,10 +116,18 @@ class PpdbController extends Controller
             if ($request->hasFile($doc)) {
                 $file = $request->file($doc);
                 $filename = time() . '_' . $doc . '_' . $file->getClientOriginalName();
-                $file->move(public_path('uploads'), $filename);
+                $file->move($uploadPath, $filename);
                 $validated[$doc] = $filename;
             }
         }
+
+        // Set default values for fields that might not be in form
+        if (!isset($validated['jenjang'])) {
+            $validated['jenjang'] = 'SMA'; // Default value
+        }
+
+        // Set default status
+        $validated['status'] = 'pending';
 
         // Create pendaftaran
         $pendaftaran = Pendaftaran::create($validated);

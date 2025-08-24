@@ -141,23 +141,23 @@
                        class="text-gray-700 hover:text-blue-600 font-medium transition">
                         Beranda
                     </a>
-                    <a href="#tahapan" 
+                    <a href="{{ url('/#tahapan') }}" 
                        class="text-gray-700 hover:text-blue-600 font-medium transition">
                         Tahapan
                     </a>
-                    <a href="#jenjang" 
+                    <a href="{{ url('/#jenjang') }}" 
                        class="text-gray-700 hover:text-blue-600 font-medium transition">
                         Jenjang
                     </a>
-                    <a href="#fasilitas" 
+                    <a href="{{ url('/#fasilitas') }}" 
                        class="text-gray-700 hover:text-blue-600 font-medium transition">
                         Fasilitas
                     </a>
-                    <a href="#program" 
+                    <a href="{{ url('/#program') }}" 
                        class="text-gray-700 hover:text-blue-600 font-medium transition">
                         Program
                     </a>
-                    <a href="#ekstrakurikuler" 
+                    <a href="{{ url('/#ekstrakurikuler') }}" 
                        class="text-gray-700 hover:text-blue-600 font-medium transition">
                         Ekstrakurikuler
                     </a>
@@ -168,26 +168,87 @@
                 </div>
                 
                 <!-- Auth Buttons -->
-                <div class="hidden md:flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-3">
                     @if(Auth::guard('pendaftaran')->check())
-                        <a href="{{ route('santri.dashboard') }}" 
-                           class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:shadow-lg transform hover:scale-105 transition">
-                            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                        </a>
-                        <form action="{{ route('santri.logout') }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" 
-                                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        <!-- User Profile Dropdown -->
+                        <div class="relative" x-data="{ profileOpen: false }">
+                            <button @click="profileOpen = !profileOpen" 
+                                    @click.away="profileOpen = false"
+                                    class="flex items-center space-x-3 px-4 py-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 group">
+                                <div class="w-8 h-8 bg-gradient-to-br from-sky-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    {{ substr(Auth::guard('pendaftaran')->user()->nama_lengkap, 0, 1) }}
+                                </div>
+                                <div class="text-left">
+                                    <p class="text-sm font-semibold text-gray-900">{{ Str::limit(Auth::guard('pendaftaran')->user()->nama_lengkap, 20) }}</p>
+                                    <p class="text-xs text-gray-500">NISN: {{ Auth::guard('pendaftaran')->user()->nisn }}</p>
+                                </div>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" 
+                                     :class="profileOpen ? 'rotate-180' : ''" 
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
                             </button>
-                        </form>
+                            
+                            <!-- Dropdown Menu -->
+                            <div x-show="profileOpen" 
+                                 x-cloak
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 transform scale-95"
+                                 x-transition:enter-end="opacity-100 transform scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="opacity-100 transform scale-100"
+                                 x-transition:leave-end="opacity-0 transform scale-95"
+                                 class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
+                                
+                                <!-- User Info -->
+                                <div class="px-4 py-3 border-b border-gray-100">
+                                    <p class="text-sm font-semibold text-gray-900">{{ Auth::guard('pendaftaran')->user()->nama_lengkap }}</p>
+                                    <p class="text-xs text-gray-500">{{ Auth::guard('pendaftaran')->user()->nisn }}</p>
+                                </div>
+                                
+                                <!-- Menu Items -->
+                                <a href="{{ route('santri.dashboard') }}" 
+                                   class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors">
+                                    <i class="fas fa-tachometer-alt w-4 mr-3 text-center"></i>
+                                    Dashboard
+                                </a>
+                                <a href="{{ route('santri.profile') }}" 
+                                   class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors">
+                                    <i class="fas fa-user w-4 mr-3 text-center"></i>
+                                    Profil Saya
+                                </a>
+                                <a href="#" 
+                                   class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors">
+                                    <i class="fas fa-key w-4 mr-3 text-center"></i>
+                                    Ubah Password
+                                </a>
+                                
+                                <div class="border-t border-gray-100 mt-2 pt-2">
+                                    <form action="{{ route('santri.logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" 
+                                                class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                            <i class="fas fa-sign-out-alt w-4 mr-3 text-center"></i>
+                                            Logout
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <a href="{{ route('santri.dashboard') }}" 
+                           class="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center">
+                            <i class="fas fa-tachometer-alt mr-2"></i>
+                            <span>Dashboard</span>
+                        </a>
                     @else
                         <a href="{{ route('ppdb.token') }}" 
-                           class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:shadow-lg transform hover:scale-105 transition btn-hover">
+                           class="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 btn-hover">
                             <i class="fas fa-user-plus mr-2"></i>Daftar
                         </a>
                         <a href="{{ route('santri.login') }}" 
-                           class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                           class="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition">
                             <i class="fas fa-sign-in-alt mr-2"></i>Login
                         </a>
                     @endif
@@ -212,29 +273,47 @@
                  class="md:hidden absolute top-16 left-0 right-0 bg-white shadow-lg">
                 <div class="px-4 py-3 space-y-3">
                     <a href="{{ route('home') }}" class="block text-gray-700 hover:text-blue-600 font-medium">Beranda</a>
-                    <a href="#tahapan" class="block text-gray-700 hover:text-blue-600 font-medium">Tahapan</a>
-                    <a href="#jenjang" class="block text-gray-700 hover:text-blue-600 font-medium">Jenjang</a>
-                    <a href="#fasilitas" class="block text-gray-700 hover:text-blue-600 font-medium">Fasilitas</a>
-                    <a href="#program" class="block text-gray-700 hover:text-blue-600 font-medium">Program</a>
-                    <a href="#ekstrakurikuler" class="block text-gray-700 hover:text-blue-600 font-medium">Ekstrakurikuler</a>
+                    <a href="{{ url('/#tahapan') }}" class="block text-gray-700 hover:text-blue-600 font-medium">Tahapan</a>
+                    <a href="{{ url('/#jenjang') }}" class="block text-gray-700 hover:text-blue-600 font-medium">Jenjang</a>
+                    <a href="{{ url('/#fasilitas') }}" class="block text-gray-700 hover:text-blue-600 font-medium">Fasilitas</a>
+                    <a href="{{ url('/#program') }}" class="block text-gray-700 hover:text-blue-600 font-medium">Program</a>
+                    <a href="{{ url('/#ekstrakurikuler') }}" class="block text-gray-700 hover:text-blue-600 font-medium">Ekstrakurikuler</a>
                     <a href="{{ route('berita.index') }}" class="block text-gray-700 hover:text-blue-600 font-medium">Berita</a>
                     
                     <div class="pt-3 border-t border-gray-200">
                         @if(Auth::guard('pendaftaran')->check())
+                            <!-- User Info Card Mobile -->
+                            <div class="bg-gradient-to-r from-sky-50 to-blue-50 rounded-lg p-3 mb-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-sky-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                        {{ substr(Auth::guard('pendaftaran')->user()->nama_lengkap, 0, 1) }}
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-semibold text-gray-900">{{ Auth::guard('pendaftaran')->user()->nama_lengkap }}</p>
+                                        <p class="text-xs text-gray-500">NISN: {{ Auth::guard('pendaftaran')->user()->nisn }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Mobile Menu Actions -->
                             <a href="{{ route('santri.dashboard') }}" 
-                               class="block w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-center rounded-lg mb-2">
+                               class="block w-full px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white text-center rounded-lg mb-2">
                                 <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                            </a>
+                            <a href="{{ route('santri.profile') }}" 
+                               class="block w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 text-center rounded-lg mb-2">
+                                <i class="fas fa-user mr-2"></i>Profil Saya
                             </a>
                             <form action="{{ route('santri.logout') }}" method="POST">
                                 @csrf
                                 <button type="submit" 
-                                        class="block w-full px-4 py-2 border border-gray-300 text-gray-700 text-center rounded-lg">
+                                        class="block w-full px-4 py-2 bg-red-50 border border-red-200 text-red-600 text-center rounded-lg">
                                     <i class="fas fa-sign-out-alt mr-2"></i>Logout
                                 </button>
                             </form>
                         @else
                             <a href="{{ route('ppdb.token') }}" 
-                               class="block w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-center rounded-lg mb-2">
+                               class="block w-full px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white text-center rounded-lg mb-2">
                                 <i class="fas fa-user-plus mr-2"></i>Daftar
                             </a>
                             <a href="{{ route('santri.login') }}" 
@@ -250,6 +329,34 @@
     
     <!-- Main Content -->
     <main class="mt-16">
+        <!-- Flash Messages -->
+        @if(session('success'))
+        <div class="fixed top-20 right-4 z-50 animate-fade-in-right">
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg">
+                <p class="font-bold">Berhasil!</p>
+                <p>{{ session('success') }}</p>
+            </div>
+        </div>
+        @endif
+        
+        @if(session('error'))
+        <div class="fixed top-20 right-4 z-50 animate-fade-in-right">
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg">
+                <p class="font-bold">Error!</p>
+                <p>{{ session('error') }}</p>
+            </div>
+        </div>
+        @endif
+        
+        @if(session('warning'))
+        <div class="fixed top-20 right-4 z-50 animate-fade-in-right">
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow-lg">
+                <p class="font-bold">Perhatian!</p>
+                <p>{{ session('warning') }}</p>
+            </div>
+        </div>
+        @endif
+        
         @yield('content')
     </main>
     
@@ -261,21 +368,21 @@
                 <div>
                     <h3 class="text-xl font-bold mb-4">PPDB MUBOSTA</h3>
                     <p class="text-gray-400 text-sm">
-                        Penerimaan Peserta Didik Baru Madrasah Aliyah eMAS. 
+                        Penerimaan Peserta Didik Baru Smp 9 Boarding School Tanggulangin dan Madrasah Aliyah eMAS. 
                         Mencetak generasi yang berakhlak mulia dan berprestasi.
                     </p>
                     <div class="flex space-x-4 mt-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition">
+                        <a href="https://www.facebook.com/profile.php?id=100073844180312&locale=id_ID" class="text-gray-400 hover:text-white transition">
                             <i class="fab fa-facebook text-xl"></i>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition">
+                        <a href="https://www.instagram.com/ppmannursidoarjoofficial/" class="text-gray-400 hover:text-white transition">
                             <i class="fab fa-instagram text-xl"></i>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition">
+                        <a href="https://www.youtube.com/@ppm.an-nursidoarjoofficial6323" class="text-gray-400 hover:text-white transition">
                             <i class="fab fa-youtube text-xl"></i>
                         </a>
                         <a href="#" class="text-gray-400 hover:text-white transition">
-                            <i class="fab fa-whatsapp text-xl"></i>
+                            <i class="https://wa.me/6282141731633?text=Halo%20Admin,%20saya%20butuh%20bantuan%20PPDB"></i>
                         </a>
                     </div>
                 </div>
@@ -285,7 +392,13 @@
                     <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
                     <ul class="space-y-2">
                         <li><a href="{{ route('home') }}" class="text-gray-400 hover:text-white transition">Beranda</a></li>
-                        <li><a href="{{ route('ppdb.token') }}" class="text-gray-400 hover:text-white transition">Pendaftaran</a></li>
+                        @if(Auth::guard('pendaftaran')->check())
+                            <li><a href="{{ route('santri.dashboard') }}" class="text-gray-400 hover:text-white transition">Dashboard</a></li>
+                            <li><a href="{{ route('santri.profile') }}" class="text-gray-400 hover:text-white transition">Profil Saya</a></li>
+                        @else
+                            <li><a href="{{ route('ppdb.token') }}" class="text-gray-400 hover:text-white transition">Pendaftaran</a></li>
+                            <li><a href="{{ route('santri.login') }}" class="text-gray-400 hover:text-white transition">Login Santri</a></li>
+                        @endif
                         <li><a href="{{ route('berita.index') }}" class="text-gray-400 hover:text-white transition">Berita</a></li>
                         <li><a href="#" class="text-gray-400 hover:text-white transition">Panduan PPDB</a></li>
                     </ul>
@@ -297,19 +410,19 @@
                     <ul class="space-y-2 text-gray-400 text-sm">
                         <li class="flex items-start">
                             <i class="fas fa-map-marker-alt mr-2 mt-1"></i>
-                            <span>Jl. Pendidikan No. 123, Kota, Provinsi 12345</span>
+                            <span>Jalan KH Ahmad Dahlan, Sangangewu, Penatarsewu, Kec. Tanggulangin, Kabupaten Sidoarjo, Jawa Timur</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-phone mr-2"></i>
-                            <span>(021) 1234-5678</span>
+                            <span>+62 821-4173-1633</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-envelope mr-2"></i>
-                            <span>ppdb@mubosta.sch.id</span>
+                            <span>ponpesannursidoarjo@gmail.com</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fab fa-whatsapp mr-2"></i>
-                            <span>+62 812-3456-7890</span>
+                            <span>+62 821-4173-1633</span>
                         </li>
                     </ul>
                 </div>
@@ -336,7 +449,7 @@
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
                 <p>&copy; {{ date('Y') }} PPDB MUBOSTA MA eMAS. All rights reserved.</p>
                 <p class="mt-2">
-                    Developed with <i class="fas fa-heart text-red-500"></i> by IT Team
+                    Developed by Mubosta Dev
                 </p>
             </div>
         </div>
@@ -369,6 +482,14 @@
                 backToTop.classList.remove('opacity-100', 'visible');
             }
         });
+        
+        // Auto hide flash messages
+        setTimeout(function() {
+            const flashMessages = document.querySelectorAll('.animate-fade-in-right');
+            flashMessages.forEach(function(msg) {
+                msg.style.display = 'none';
+            });
+        }, 5000);
     </script>
     
     @stack('scripts')
